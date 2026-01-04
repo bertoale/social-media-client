@@ -23,23 +23,14 @@ export default function UserProfilePage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingFollow, setLoadingFollow] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [followers, setFollowers] = useState<User[]>([]);
+  const [following, setFollowing] = useState<User[]>([]);
 
   useEffect(() => {
     fetchUserProfile();
-    fetchCurrentUser();
+    fetchFollowers();
+    fetchFollowing();
   }, [username]);
-
-  const fetchCurrentUser = async () => {
-    try {
-      const response = await userService.getCurrentUser();
-      if (response.success && response.data) {
-        setCurrentUserId(response.data.id);
-      }
-    } catch (error) {
-      console.error("Error fetching current user:", error);
-    }
-  };
 
   const fetchUserProfile = async () => {
     try {
@@ -65,6 +56,28 @@ export default function UserProfilePage() {
       }
     } catch (error) {
       console.error("Error fetching user posts:", error);
+    }
+  };
+
+  const fetchFollowers = async () => {
+    try {
+      const response = await userService.getFollowers();
+      if (response.success && response.data) {
+        setFollowers(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching followers:", error);
+    }
+  };
+
+  const fetchFollowing = async () => {
+    try {
+      const response = await userService.getFollowing();
+      if (response.success && response.data) {
+        setFollowing(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching following:", error);
     }
   };
 
@@ -118,8 +131,6 @@ export default function UserProfilePage() {
     );
   }
 
-  const isOwnProfile = currentUserId === user.id;
-
   return (
     <div className="container mx-auto max-w-6xl p-6">
       {/* Back Button */}
@@ -155,35 +166,24 @@ export default function UserProfilePage() {
                   <h1 className="text-3xl font-bold">@{user.username}</h1>
                   <p className="text-muted-foreground">{user.email}</p>
                 </div>
-                {!isOwnProfile && (
-                  <Button
-                    onClick={handleFollow}
-                    disabled={loadingFollow}
-                    variant={user.is_followed ? "outline" : "default"}
-                    className="w-full sm:w-auto"
-                  >
-                    {user.is_followed ? (
-                      <>
-                        <UserMinus className="h-4 w-4 mr-2" />
-                        Unfollow
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Follow
-                      </>
-                    )}
-                  </Button>
-                )}
-                {isOwnProfile && (
-                  <Button
-                    onClick={() => router.push("/profile")}
-                    variant="outline"
-                    className="w-full sm:w-auto"
-                  >
-                    Edit Profile
-                  </Button>
-                )}
+                <Button
+                  onClick={handleFollow}
+                  disabled={loadingFollow}
+                  variant={user.is_followed ? "outline" : "default"}
+                  className="w-full sm:w-auto"
+                >
+                  {user.is_followed ? (
+                    <>
+                      <UserMinus className="h-4 w-4 mr-2" />
+                      Unfollow
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Follow
+                    </>
+                  )}
+                </Button>
               </div>
 
               {/* Bio */}
@@ -192,15 +192,11 @@ export default function UserProfilePage() {
               {/* Stats */}
               <div className="flex gap-6">
                 <div>
-                  <span className="font-bold text-xl">
-                    {user.followers_count}
-                  </span>
+                  <span className="font-bold text-xl">{followers.length}</span>
                   <span className="text-muted-foreground ml-1">followers</span>
                 </div>
                 <div>
-                  <span className="font-bold text-xl">
-                    {user.following_count}
-                  </span>
+                  <span className="font-bold text-xl">{following.length}</span>
                   <span className="text-muted-foreground ml-1">following</span>
                 </div>
                 <div>

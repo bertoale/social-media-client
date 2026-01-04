@@ -21,9 +21,8 @@ export const userService = {
 
     return response.data;
   },
-
-  logout: () => {
-    localStorage.removeItem("token");
+  logout: async () => {
+    await apiPublic.post("/api/logout");
   },
 
   getCurrentUser: async (): Promise<ApiResponse<User>> => {

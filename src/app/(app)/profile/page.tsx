@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Edit } from "lucide-react";
+import { Cookie } from "next/font/google";
 
 export default function ProfilePage() {
   const [myPosts, setMyPosts] = useState<Post[]>([]);
@@ -35,12 +36,22 @@ export default function ProfilePage() {
   const [followingDialogOpen, setFollowingDialogOpen] = useState(false);
 
   useEffect(() => {
-    fetchProfileData();
     fetchCurrentUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchProfileData();
   }, []);
 
-  const fetchCurrentUser = () => {
+  // Ambil user dari API, fallback ke localStorage jika gagal
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await userService.getCurrentUser();
+      if (response.success && response.data) {
+        setCurrentUserId(response.data.id);
+        setCurrentUser(response.data);
+        return;
+      }
+    } catch (e) {
+      // fallback ke localStorage jika API gagal
+    }
     const userData = localStorage.getItem("user");
     if (userData) {
       const user = JSON.parse(userData);
@@ -63,18 +74,6 @@ export default function ProfilePage() {
       const likedResponse = await postService.getLikedPost();
       if (likedResponse.success && likedResponse.data) {
         setLikedPosts(likedResponse.data);
-      }
-
-      // Fetch followers
-      const followersResponse = await userService.getFollowers();
-      if (followersResponse.success && followersResponse.data) {
-        setFollowerCount(followersResponse.data.length);
-      }
-
-      // Fetch following
-      const followingResponse = await userService.getFollowing();
-      if (followingResponse.success && followingResponse.data) {
-        setFollowingCount(followingResponse.data.length);
       }
     } catch (error) {
       console.error("Error fetching profile data:", error);
@@ -199,7 +198,7 @@ export default function ProfilePage() {
                   className="text-center hover:opacity-80 transition-opacity"
                 >
                   <p className="text-lg md:text-2xl font-bold">
-                    {followerCount}
+                    {currentUser?.followers_count}
                   </p>
                   <p className="text-xs md:text-sm text-muted-foreground">
                     Followers
@@ -210,7 +209,7 @@ export default function ProfilePage() {
                   className="text-center hover:opacity-80 transition-opacity"
                 >
                   <p className="text-lg md:text-2xl font-bold">
-                    {followingCount}
+                    {currentUser?.following_count}
                   </p>
                   <p className="text-xs md:text-sm text-muted-foreground">
                     Following
@@ -225,13 +224,26 @@ export default function ProfilePage() {
                   </p>
                 </div>
               </div>
-              <Button
-                onClick={() => setIsEditProfileOpen(true)}
-                variant="outline"
-              >
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Profile
-              </Button>
+              <div className="flex gap-2 mt-2">
+                <Button
+                  onClick={() => setIsEditProfileOpen(true)}
+                  variant="outline"
+                  className=""
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Profile
+                </Button>
+                <Button
+                  onClick={() => {
+                    userService.logout();
+                    localStorage.removeItem("user");
+                    window.location.href = "/login";
+                  }}
+                  variant="destructive"
+                >
+                  Logout
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -291,6 +303,16 @@ export default function ProfilePage() {
         open={isEditProfileOpen}
         onOpenChange={setIsEditProfileOpen}
         onSave={handleEditProfile}
+      />
+      <FollowersDialog
+        open={followersDialogOpen}
+        onOpenChange={setFollowersDialogOpen}
+        type="followers"
+      />
+      <FollowersDialog
+        open={followingDialogOpen}
+        onOpenChange={setFollowingDialogOpen}
+        type="following"
       />
     </div>
   );
