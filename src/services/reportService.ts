@@ -1,10 +1,5 @@
 import { apiClient } from "@/lib/api.config";
-import type {
-  Report,
-  ReportRequest,
-  UpdateReportRequest,
-  ApiResponse,
-} from "@/types";
+import type { Report, ReportRequest, ReportStatus, ApiResponse } from "@/types";
 
 export const reportService = {
   createReport: async (
@@ -24,15 +19,13 @@ export const reportService = {
     const response = await apiClient.get("/api/reports");
     return response.data;
   },
-
   updateReportStatus: async (
     reportId: number,
-    data: UpdateReportRequest
+    status: ReportStatus
   ): Promise<ApiResponse<Report>> => {
-    const response = await apiClient.put(
-      `/api/reports/${reportId}/status`,
-      data
-    );
+    const response = await apiClient.put(`/api/reports/${reportId}/status`, {
+      status,
+    });
     return response.data;
   },
 };

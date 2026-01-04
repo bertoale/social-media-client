@@ -84,4 +84,14 @@ export const postService = {
     const response = await apiClient.get("/api/posts/liked/me");
     return response.data;
   },
+
+  getExplorePosts: async (
+    limit: number = 10,
+    offset: number = 0
+  ): Promise<ApiResponse<Post[]>> => {
+    const response = await apiClient.get(
+      `/api/posts?limit=${limit}&offset=${offset}`
+    );
+    return response.data;
+  },
 };

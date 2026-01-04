@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { postService } from "@/services/postService";
 import { reportService } from "@/services/reportService";
+import { userService } from "@/services/userService";
 import { Post } from "@/types";
 import { PostCard } from "@/components/post/post-card";
 import { EditPostDialog } from "@/components/post/edit-post-dialog";
 import { ReportPostDialog } from "@/components/post/report-post-dialog";
 import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 export default function FeedPage() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -22,11 +24,14 @@ export default function FeedPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchCurrentUser = () => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      const user = JSON.parse(userData);
-      setCurrentUserId(user.id);
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await userService.getCurrentUser();
+      if (response.success && response.data) {
+        setCurrentUserId(response.data.id);
+      }
+    } catch (e) {
+      console.error("Failed to fetch current user:", e);
     }
   };
 

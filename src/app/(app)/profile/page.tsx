@@ -19,7 +19,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Edit } from "lucide-react";
-import { Cookie } from "next/font/google";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const [myPosts, setMyPosts] = useState<Post[]>([]);
@@ -34,29 +35,25 @@ export default function ProfilePage() {
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [followersDialogOpen, setFollowersDialogOpen] = useState(false);
   const [followingDialogOpen, setFollowingDialogOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetchCurrentUser();
     fetchProfileData();
   }, []);
 
-  // Ambil user dari API, fallback ke localStorage jika gagal
+  // Ambil user dari API
   const fetchCurrentUser = async () => {
     try {
       const response = await userService.getCurrentUser();
       if (response.success && response.data) {
         setCurrentUserId(response.data.id);
         setCurrentUser(response.data);
-        return;
+        // Simpan ke cookie untuk fallback
       }
     } catch (e) {
-      // fallback ke localStorage jika API gagal
-    }
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      const user = JSON.parse(userData);
-      setCurrentUserId(user.id);
-      setCurrentUser(user);
+      console.error("Failed to fetch current user:", e);
+      toast.error("Failed to load user data");
     }
   };
 
@@ -134,12 +131,10 @@ export default function ProfilePage() {
         bio,
         ...(avatar && { avatar }),
       });
-
       if (response.success && response.data) {
         toast.success("Profile updated successfully");
         setCurrentUser(response.data);
-        // Update localStorage
-        localStorage.setItem("user", JSON.stringify(response.data));
+        // Update cookie
         fetchProfileData();
       }
     } catch (error) {
@@ -232,12 +227,11 @@ export default function ProfilePage() {
                 >
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Profile
-                </Button>
+                </Button>{" "}
                 <Button
                   onClick={() => {
                     userService.logout();
-                    localStorage.removeItem("user");
-                    window.location.href = "/login";
+                    router.push("/login");
                   }}
                   variant="destructive"
                 >

@@ -31,9 +31,9 @@ export function middleware(request: NextRequest) {
     const role = getRoleFromToken(token);
 
     // 🚫 admin masuk app
-    if (role === "admin" && isProtectedRoute) {
-      return NextResponse.redirect(new URL("/admin", request.url));
-    }
+    // if (role === "admin" && isProtectedRoute) {
+    //   return NextResponse.redirect(new URL("/admin", request.url));
+    // }
 
     // 🚫 user masuk admin
     if (role === "user" && isAdminRoute) {

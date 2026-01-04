@@ -7,6 +7,7 @@ import { postService } from "@/services/postService";
 import { likeService } from "@/services/likeService";
 import { commentService } from "@/services/commentService";
 import { reportService } from "@/services/reportService";
+import { userService } from "@/services/userService";
 import { Post, Comment } from "@/types";
 import { API_URL } from "@/lib/config";
 import {
@@ -59,23 +60,28 @@ export default function PostDetailPage() {
   const [replyContent, setReplyContent] = useState("");
   const [editingComment, setEditingComment] = useState<Comment | null>(null);
   const [editCommentContent, setEditCommentContent] = useState("");
-
   const [isEditPostOpen, setIsEditPostOpen] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
-
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
   useEffect(() => {
     fetchPostDetail();
     fetchCurrentUser();
   }, [postId]);
 
-  const fetchCurrentUser = () => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      const user = JSON.parse(userData);
-      setCurrentUserId(user.id);
+  const fetchCurrentUser = async () => {
+    try {
+      const response = await userService.getCurrentUser();
+      if (response.success && response.data) {
+        setCurrentUserId(response.data.id);
+        setCurrentUserRole(response.data.role || null);
+        // Simpan ke cookie untuk fallback
+      }
+    } catch (e) {
+      console.error("Failed to fetch current user:", e);
     }
   };
+
   const fetchPostDetail = async () => {
     try {
       setLoading(true);
@@ -476,8 +482,9 @@ export default function PostDetailPage() {
       </div>
     );
   }
-
   const isOwner = currentUserId === post.author_id;
+  const isAdmin = currentUserRole === "admin";
+  const canDelete = isOwner || isAdmin;
 
   return (
     <div className="container mx-auto max-w-4xl px-4 md:px-6 py-4 md:py-6">
@@ -522,11 +529,11 @@ export default function PostDetailPage() {
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
-              </DropdownMenuTrigger>
+              </DropdownMenuTrigger>{" "}
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {isOwner ? (
+                {isOwner && (
                   <>
                     <DropdownMenuItem onClick={() => setIsEditPostOpen(true)}>
                       <Edit className="mr-2 h-4 w-4" />
@@ -549,7 +556,11 @@ export default function PostDetailPage() {
                         </>
                       )}
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
+                  </>
+                )}
+                {canDelete && (
+                  <>
+                    {isOwner && <DropdownMenuSeparator />}
                     <DropdownMenuItem
                       onClick={handleDeletePost}
                       className="text-red-600"
@@ -558,7 +569,8 @@ export default function PostDetailPage() {
                       Delete
                     </DropdownMenuItem>
                   </>
-                ) : (
+                )}
+                {!isOwner && !isAdmin && (
                   <DropdownMenuItem onClick={() => setIsReportOpen(true)}>
                     <Flag className="mr-2 h-4 w-4" />
                     Report
