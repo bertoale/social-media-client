@@ -19,14 +19,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Edit } from "lucide-react";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const [myPosts, setMyPosts] = useState<Post[]>([]);
   const [likedPosts, setLikedPosts] = useState<Post[]>([]);
-  const [followerCount, setFollowerCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
+
   const [loading, setLoading] = useState(true);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [reportingPostId, setReportingPostId] = useState<number | null>(null);

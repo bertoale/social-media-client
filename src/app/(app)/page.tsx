@@ -9,7 +9,6 @@ import { PostCard } from "@/components/post/post-card";
 import { EditPostDialog } from "@/components/post/edit-post-dialog";
 import { ReportPostDialog } from "@/components/post/report-post-dialog";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
 
 export default function FeedPage() {
   const [posts, setPosts] = useState<Post[]>([]);
