@@ -192,11 +192,15 @@ export default function UserProfilePage() {
               {/* Stats */}
               <div className="flex gap-6">
                 <div>
-                  <span className="font-bold text-xl">{followers.length}</span>
+                  <span className="font-bold text-xl">
+                    {user.followers_count}
+                  </span>
                   <span className="text-muted-foreground ml-1">followers</span>
                 </div>
                 <div>
-                  <span className="font-bold text-xl">{following.length}</span>
+                  <span className="font-bold text-xl">
+                    {user.following_count}
+                  </span>
                   <span className="text-muted-foreground ml-1">following</span>
                 </div>
                 <div>
