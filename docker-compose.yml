@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  nextjs-app:
+    image: username/nextjs-app:latest # ganti dengan nama Docker Hub-mu
+    container_name: nextjs-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    # Jika ingin mount folder uploads dari server:
+    # volumes:
+    #   - ./uploads:/app/uploads
