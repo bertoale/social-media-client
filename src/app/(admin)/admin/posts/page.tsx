@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { postService } from "@/services/postService";
 import { Post } from "@/types";
-import { API_URL } from "@/lib/config";
+import { getImageUrl } from "@/lib/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -131,7 +131,7 @@ export default function AdminPostsPage() {
                   {post.image && (
                     <div className="w-24 h-24 shrink-0">
                       <img
-                        src={API_URL + post.image}
+                        src={getImageUrl(post.image)}
                         alt={post.title}
                         className="w-full h-full object-cover rounded"
                       />
@@ -147,9 +147,7 @@ export default function AdminPostsPage() {
                       <Avatar className="h-6 w-6">
                         <AvatarImage
                           src={
-                            post.author.avatar
-                              ? API_URL + post.author.avatar
-                              : undefined
+                            getImageUrl(post.author.avatar)
                           }
                           alt={post.author.username}
                         />

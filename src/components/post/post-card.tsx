@@ -1,7 +1,7 @@
 "use client";
 
 import { Post } from "@/types";
-import { API_URL } from "@/lib/config";
+import { getImageUrl } from "@/lib/image";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +29,7 @@ export function PostCard({ post, variant = "grid" }: PostCardProps) {
         {/* Background Image */}
         {post.image ? (
           <img
-            src={API_URL + post.image}
+            src={getImageUrl(post.image)}
             alt={post.title}
             className={cn(
               "absolute inset-0 h-full w-full object-cover",
@@ -54,9 +54,9 @@ export function PostCard({ post, variant = "grid" }: PostCardProps) {
           >
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={
-                  post.author.avatar ? API_URL + post.author.avatar : undefined
-                }
+                  src={
+                    getImageUrl(post.author.avatar)
+                  }
               />
               <AvatarFallback>
                 {post.author.username[0].toUpperCase()}
@@ -110,7 +110,7 @@ export function PostCard({ post, variant = "grid" }: PostCardProps) {
       {/* Background Image */}
       {post.image ? (
         <img
-          src={API_URL + post.image}
+          src={getImageUrl(post.image)}
           alt={post.title}
           className={cn(
             "absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105",
@@ -136,7 +136,7 @@ export function PostCard({ post, variant = "grid" }: PostCardProps) {
           <Avatar className="h-8 w-8">
             <AvatarImage
               src={
-                post.author.avatar ? API_URL + post.author.avatar : undefined
+                post.author.avatar ? getImageUrl(post.author.avatar) : undefined
               }
             />
             <AvatarFallback>

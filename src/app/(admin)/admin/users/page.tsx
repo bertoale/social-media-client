@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { userService } from "@/services/userService";
 import { User } from "@/types";
-import { API_URL } from "@/lib/config";
+import { getImageUrl } from "@/lib/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -100,7 +100,7 @@ export default function AdminUsersPage() {
                   <div className="flex items-center gap-4">
                     <Avatar className="h-12 w-12">
                       <AvatarImage
-                        src={user.avatar ? API_URL + user.avatar : undefined}
+                        src={getImageUrl(user.avatar)}
                         alt={user.username}
                       />
                       <AvatarFallback>

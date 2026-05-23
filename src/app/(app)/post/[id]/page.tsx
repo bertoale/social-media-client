@@ -9,7 +9,7 @@ import { commentService } from "@/services/commentService";
 import { reportService } from "@/services/reportService";
 import { userService } from "@/services/userService";
 import { Post, Comment } from "@/types";
-import { API_URL } from "@/lib/config";
+import { getImageUrl } from "@/lib/image";
 import {
   Card,
   CardContent,
@@ -325,11 +325,7 @@ export default function PostDetailPage() {
               >
                 <Avatar className="h-9 w-9">
                   <AvatarImage
-                    src={
-                      comment.user?.avatar
-                        ? API_URL + comment.user.avatar
-                        : undefined
-                    }
+                    src={getImageUrl(comment.user?.avatar)}
                   />
                   <AvatarFallback>
                     {comment.user?.username?.[0]?.toUpperCase() || "U"}
@@ -498,11 +494,7 @@ export default function PostDetailPage() {
             >
               <Avatar className="h-10 w-10 md:h-12 md:w-12">
                 <AvatarImage
-                  src={
-                    post.author.avatar
-                      ? API_URL + post.author.avatar
-                      : undefined
-                  }
+                  src={getImageUrl(post.author.avatar)}
                   alt={post.author.username}
                 />
                 <AvatarFallback>
@@ -584,7 +576,7 @@ export default function PostDetailPage() {
         {post.image && (
           <div className="relative aspect-video w-full bg-muted">
             <img
-              src={API_URL + post.image}
+              src={getImageUrl(post.image)}
               alt={post.title}
               className="object-cover w-full h-full"
             />

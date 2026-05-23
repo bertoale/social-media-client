@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { reportService } from "@/services/reportService";
 import { Report, ReportStatus } from "@/types";
-import { API_URL } from "@/lib/config";
+import { getImageUrl } from "@/lib/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -148,7 +148,7 @@ export default function AdminReportsPage() {
                             <AvatarImage
                               src={
                                 report.reporter.avatar
-                                  ? API_URL + report.reporter.avatar
+                                  ? getImageUrl(report.reporter.avatar)
                                   : undefined
                               }
                               alt={report.reporter.username}

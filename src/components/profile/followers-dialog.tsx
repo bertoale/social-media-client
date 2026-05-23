@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { User } from "@/types";
-import { API_URL } from "@/lib/config";
+import { getImageUrl } from "@/lib/image";
 import { userService } from "@/services/userService";
 import {
   Dialog,
@@ -88,7 +88,7 @@ export function FollowersDialog({
                 >
                   <Avatar className="h-12 w-12">
                     <AvatarImage
-                      src={user.avatar ? API_URL + user.avatar : undefined}
+                      src={getImageUrl(user.avatar)}
                       alt={user.username}
                     />
                     <AvatarFallback>

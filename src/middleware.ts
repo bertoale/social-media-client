@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getRoleFromToken } from "@/lib/auth";
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value;
   const pathname = request.nextUrl.pathname;
 
@@ -22,27 +21,64 @@ export function middleware(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
-  // 🚫 belum login → protected
+  // Check if user is already logged in and trying to access auth pages
+  if (token && isAuthRoute) {
+    // Validate session by checking with API
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const response = await fetch(`${apiUrl}/api/users/me`, {
+        headers: {
+          Cookie: `token=${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const userRole = data.data?.role;
+
+        // Admin users should not access regular app routes
+        if (userRole === "admin" && isProtectedRoute) {
+          return NextResponse.redirect(new URL("/admin", request.url));
+        }
+
+        // Already logged in, redirect to home
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+    } catch {
+      // Session validation failed, allow access to auth pages
+    }
+  }
+
+  // No token and trying to access protected route
   if (!token && isProtectedRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (token) {
-    const role = getRoleFromToken(token);
+  // Has token but trying to access admin route - validate role
+  if (token && isAdminRoute) {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const response = await fetch(`${apiUrl}/api/users/me`, {
+        headers: {
+          Cookie: `token=${token}`,
+        },
+      });
 
-    // 🚫 admin masuk app
-    // if (role === "admin" && isProtectedRoute) {
-    //   return NextResponse.redirect(new URL("/admin", request.url));
-    // }
+      if (response.ok) {
+        const data = await response.json();
+        const userRole = data.data?.role;
 
-    // 🚫 user masuk admin
-    if (role === "user" && isAdminRoute) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-
-    // 🚫 sudah login → auth pages
-    if (isAuthRoute) {
-      return NextResponse.redirect(new URL("/", request.url));
+        // Non-admin users cannot access admin routes
+        if (userRole !== "admin") {
+          return NextResponse.redirect(new URL("/", request.url));
+        }
+      } else {
+        // Invalid session, redirect to login
+        return NextResponse.redirect(new URL("/login", request.url));
+      }
+    } catch {
+      // Validation failed, redirect to login
+      return NextResponse.redirect(new URL("/login", request.url));
     }
   }
 

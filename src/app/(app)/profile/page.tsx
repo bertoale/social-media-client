@@ -7,7 +7,7 @@ import { followService } from "@/services/followService";
 import { reportService } from "@/services/reportService";
 import { userService } from "@/services/userService";
 import { Post, User } from "@/types";
-import { API_URL } from "@/lib/config";
+import { getImageUrl } from "@/lib/image";
 import { PostCard } from "@/components/post/post-card";
 import { EditPostDialog } from "@/components/post/edit-post-dialog";
 import { ReportPostDialog } from "@/components/post/report-post-dialog";
@@ -157,7 +157,7 @@ export default function ProfilePage() {
             <Avatar className="h-20 w-20 md:h-24 md:w-24">
               <AvatarImage
                 src={
-                  currentUser?.avatar ? API_URL + currentUser.avatar : undefined
+                  getImageUrl(currentUser?.avatar)
                 }
                 alt={currentUser?.username || "Profile"}
               />

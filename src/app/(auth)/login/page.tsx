@@ -8,7 +8,7 @@ import { CardFooter } from "@/components/ui/card";
 export default function LoginPage() {
   const router = useRouter();
   return (
-    <div>
+    <div className="min-h-screen flex items-center justify-center">
       <LoginForm onSuccess={() => router.push("/")} />
     </div>
   );

@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { userService } from "@/services/userService";
 import { User } from "@/types";
-import { API_URL } from "@/lib/config";
+import { getImageUrl } from "@/lib/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -117,7 +117,7 @@ export default function ExplorePage() {
                   >
                     <Avatar className="h-12 w-12">
                       <AvatarImage
-                        src={user.avatar ? API_URL + user.avatar : undefined}
+                        src={getImageUrl(user.avatar)}
                         alt={user.username}
                       />
                       <AvatarFallback>
@@ -179,7 +179,7 @@ export default function ExplorePage() {
                     <div className="flex flex-col items-center text-center gap-4">
                       <Avatar className="h-20 w-20 ring-2 ring-border">
                         <AvatarImage
-                          src={user.avatar ? API_URL + user.avatar : undefined}
+                        src={getImageUrl(user.avatar)}
                           alt={user.username}
                         />
                         <AvatarFallback className="text-2xl">

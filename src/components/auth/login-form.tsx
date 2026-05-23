@@ -43,25 +43,29 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
     setError(null);
     try {
       const response = await userService.login(data);
+      console.log("Login response:", response);
       if (response.success) {
         onSuccess?.();
       } else {
         setError(response.message || "Login failed");
       }
     } catch (err: any) {
-      setError(
-        err.response?.data?.message || "An error occurred. Please try again."
-      );
+      console.error("Login error:", err);
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "An error occurred. Please try again.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <section className="py-32 w-full">
-      <div className="container">
-        <div className="flex flex-col items-center gap-6">
-          <Card className="w-full max-w-95 shadow-lg">
+    <section className="w-full">
+      <div className="w-full flex items-center justify-center">
+        <div className="w-full max-w-md">
+          <Card className="shadow-lg">
             {/* Header */}
             <CardHeader className="flex flex-col items-center gap-2 text-center">
               <img
@@ -149,15 +153,16 @@ export function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
                 </Button>
               </form>
             </CardContent>
+            {/* Footer */}
+            <CardFooter className="flex flex-col items-center gap-2">
+              <div className="flex gap-1 text-sm">
+                <p>Don&apos;t have an account?</p>
+                <a href="/register" className="underline">
+                  Sign up
+                </a>
+              </div>
+            </CardFooter>
           </Card>
-
-          {/* Footer */}
-          <div className="flex gap-1 text-sm">
-            <p>Don&apos;t have an account?</p>
-            <a href="/register" className="underline">
-              Sign up
-            </a>
-          </div>
         </div>
       </div>
     </section>

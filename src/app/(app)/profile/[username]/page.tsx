@@ -6,7 +6,7 @@ import { userService } from "@/services/userService";
 import { postService } from "@/services/postService";
 import { followService } from "@/services/followService";
 import { User, Post } from "@/types";
-import { API_URL } from "@/lib/config";
+import { getImageUrl } from "@/lib/image";
 import { PostCard } from "@/components/post/post-card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -151,7 +151,7 @@ export default function UserProfilePage() {
             {/* Avatar */}
             <Avatar className="h-32 w-32 ring-4 ring-border">
               <AvatarImage
-                src={user.avatar ? API_URL + user.avatar : undefined}
+                src={getImageUrl(user.avatar)}
                 alt={user.username}
               />
               <AvatarFallback className="text-4xl">

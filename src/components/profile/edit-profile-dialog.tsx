@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { API_URL } from "@/lib/config";
+import { getImageUrl } from "@/lib/image";
 import { Upload } from "lucide-react";
 
 interface EditProfileDialogProps {
@@ -41,7 +41,7 @@ export function EditProfileDialog({
     if (user) {
       setUsername(user.username || "");
       setBio(user.bio || "");
-      setAvatarPreview(user.avatar ? API_URL + user.avatar : "");
+      setAvatarPreview(getImageUrl(user.avatar) ?? "");
     }
   }, [user]);
 
